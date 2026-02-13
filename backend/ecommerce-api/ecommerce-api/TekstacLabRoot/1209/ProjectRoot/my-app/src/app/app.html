@@ -1,0 +1,16 @@
+<table border="1">
+  <tr>
+    <th>Name</th>
+    <th>Register Number</th>
+    <th>Age</th>
+  </tr>
+
+  @for (student of students; track $index) {
+    <tr>
+      <td>{{ student.name}}</td>
+      <td>{{ student.registerNumber }}</td>
+      <td>{{ student.age }}</td>
+    </tr>
+  }
+</table>
+<p>{{students |json }}</p>

@@ -1,0 +1,31 @@
+<form [formGroup]="loginform" (ngSubmit)="checklogin()" >
+  National Government Service Portal
+
+    Complaint Form<br><br>
+    Full Name <br>
+    <input type="text" formControlName="name" placeholder="Enter you name"> <br><br>
+    Address <br>
+    <input type="text" formControlName="address" ><br><br>
+    Contact Number <br>
+    <input type="number" formControlName="contact"><br><br>
+    Email <br>
+    <input type="email" formControlName="email"><br><br>
+    Complaint Type<br>
+    <select formControlName="select">
+      <option>Theft</option>
+      <option>Assault</option>
+      <option>Vandalism</option>
+      <option>Other</option>
+  </select> <br><br>
+  Complaint Details <br>
+  <input type="text" formControlName="details"> <br><br>
+  Date <br>
+  <input type="date" formControlName="date"><br><br>
+ <button type="submit" value="Submit" [disabled]="loginform.invalid">Submit</button>
+ @if(check){
+  The Complaint Form has been submitted successfully
+ }
+
+
+
+

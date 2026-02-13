@@ -1,0 +1,31 @@
+<div class ="banner">
+  <span>WeHost</span>
+</div>
+<div class="main-bg">
+  <div class="form-box">
+
+    @for(mode of toggleArr; track $index){
+      <ng-container [ngSwitch]="mode">
+        <div *ngSwitchCase="'login'">
+          <div class="right-link">
+            <span class="newtxt">New to WeHost ? </span>
+            <a href="#" class="signuplink" (click)="toggleForm('signup')">Sign Up</a>
+          </div>
+          <input type="text" [(ngModel)]="loginName" placeholder="User Name" class="inputbox">
+          <input type="password" [(ngModel)]="loginPassword" placeholder="password" class="inputbox">
+          <button class="mainbtn" (click)="login()">Login</button>
+        </div>
+        <div *ngSwitchCase="'signup'">
+          <div class="right-link">
+            <a href="#" class="signuplink" (click)="toggleForm('login')">Back to Login</a>
+          </div>
+          <input type="email" [(ngModel)]="sihnupEmail" placeholder="Email Id" class="inputbox">
+          <input type="text" [(ngModel)]="signupcontact" placeholder="Contact number" class="inputbox">
+          <input type="text" [(ngModel)]="signupName" placeholder="Name" class="inputbox">
+          <input type="password" [(ngModel)]="signupPassword" placeholder="Password" class="inputbox">
+          <button class="mainbtn" (click)="signup()">Signup</button>
+        </div>
+      </ng-container>
+    }
+  </div>
+</div>
