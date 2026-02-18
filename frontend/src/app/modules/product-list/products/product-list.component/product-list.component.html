@@ -1,14 +1,229 @@
-<h2>Products</h2>
+<div class="products-container">
+  <h2>Products</h2>
+  <div class="admin-buttons">
+    <button (click)="openForm()" class="add-btn">+ Add Product</button>
+    <button (click)="loadPendingReviews()" class="reviews-btn">📋 Manage Reviews</button>
+  </div>
 
-  @for (p of products; track p.id) {
-    <div style="border:1px solid #ccc; padding:10px; margin:10px;">
-      <h3>{{ p.name }}</h3>
-      <p><strong>Description:</strong> {{ p.description }}</p>
-      <p><strong>Price:</strong> ₹ {{ p.price }}</p>
-      <p><strong>Category:</strong> {{ p.category }}</p>
+  <!-- Search and Filter Section -->
+  <div class="search-filter-container">
+    <h3>Search & Filter</h3>
+    <div class="search-bar">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        (ngModelChange)="onSearchChange()"
+        placeholder="Search by product name or description..."
+        class="search-input">
+    </div>
 
-      <button (click)="addToCart(p.id)">Add to Cart</button>
+    <div class="filter-row">
+      <div class="filter-group">
+        <label for="category">Category:</label>
+        <select 
+          id="category"
+          [(ngModel)]="filterCategory" 
+          (ngModelChange)="onFilterChange()"
+          class="filter-select">
+          <option value="">All Categories</option>
+          @for (cat of categories; track cat) {
+            <option [value]="cat">{{ cat }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="minPrice">Min Price (₹):</label>
+        <input 
+          id="minPrice"
+          type="number" 
+          [(ngModel)]="filterMinPrice" 
+          (ngModelChange)="onFilterChange()"
+          class="filter-input">
+      </div>
+
+      <div class="filter-group">
+        <label for="maxPrice">Max Price (₹):</label>
+        <input 
+          id="maxPrice"
+          type="number" 
+          [(ngModel)]="filterMaxPrice" 
+          (ngModelChange)="onFilterChange()"
+          class="filter-input">
+      </div>
+
+      <button (click)="resetFilters()" class="reset-btn">Reset Filters</button>
+    </div>
+
+    <p class="results-count">Found {{ filteredProducts.length }} product(s)</p>
+  </div>
+
+  <!-- Add/Edit Form -->
+  @if (showForm) {
+    <div class="form-container">
+      <h3>{{ editingId ? 'Edit Product' : 'Add New Product' }}</h3>
+      <form (ngSubmit)="saveProduct()">
+        <div class="form-group">
+          <label>Product Name *</label>
+          <input type="text" [(ngModel)]="formData.name" name="name" required>
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea [(ngModel)]="formData.description" name="description"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Price (₹) *</label>
+          <input type="number" [(ngModel)]="formData.price" name="price" required>
+        </div>
+
+        <div class="form-group">
+          <label>Stock Quantity *</label>
+          <input type="number" [(ngModel)]="formData.stock" name="stock" required>
+        </div>
+
+        <div class="form-group">
+          <label>Category</label>
+          <input type="text" [(ngModel)]="formData.category" name="category">
+        </div>
+
+        <div class="form-group">
+          <label>Image URL</label>
+          <input type="text" [(ngModel)]="formData.imageUrl" name="imageUrl">
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="save-btn">Save</button>
+          <button type="button" (click)="cancelForm()" class="cancel-btn">Cancel</button>
+        </div>
+      </form>
     </div>
   }
+
+  <!-- Pending Reviews Panel -->
+  @if (showPendingReviews) {
+    <div class="reviews-panel">
+      <div class="reviews-header">
+        <h3>Pending Reviews ({{ pendingReviews.length }})</h3>
+        <button (click)="closePendingReviews()" class="close-btn">✕</button>
+      </div>
+
+      @if (pendingReviews.length === 0) {
+        <p>No pending reviews</p>
+      } @else {
+        <div class="reviews-list">
+          @for (review of pendingReviews; track review.id) {
+            <div class="review-item">
+              <div class="review-header">
+                <strong>{{ getReviewerName(review) }}</strong> - ⭐ {{ review.rating }}/5
+              </div>
+              <p class="review-comment">{{ review.comment }}</p>
+              <p class="review-product">Product: {{ getProductName(review) }}</p>
+              <div class="review-actions">
+                <button (click)="approveReview(review.id)" class="approve-btn">✓ Approve</button>
+                <button (click)="editReview(review)" class="edit-btn">Edit</button>
+                <button (click)="deleteReview(review.id, true)" class="delete-btn">Delete</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Product Reviews Panel -->
+  @if (showReviews && selectedProductId) {
+    <div class="reviews-panel">
+      <div class="reviews-header">
+        <h3>Reviews</h3>
+        <button (click)="closeReviewsPanel()" class="close-btn">✕</button>
+      </div>
+
+      <button (click)="openReviewForm()" class="add-review-btn">+ Add Review</button>
+
+      @if (showReviewForm) {
+        <div class="review-form">
+          <h4>{{ editingReviewId ? 'Edit Review' : 'Write a Review' }}</h4>
+          <div class="form-group">
+            <label>Rating *</label>
+            <select [(ngModel)]="reviewFormData.rating" name="rating">
+              <option [value]="1">1 ⭐</option>
+              <option [value]="2">2 ⭐⭐</option>
+              <option [value]="3">3 ⭐⭐⭐</option>
+              <option [value]="4">4 ⭐⭐⭐⭐</option>
+              <option [value]="5">5 ⭐⭐⭐⭐⭐</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Comment *</label>
+            <textarea [(ngModel)]="reviewFormData.comment" name="comment" placeholder="Write your review..."></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button (click)="saveReview()" class="save-btn">Save Review</button>
+            <button (click)="cancelReviewForm()" class="cancel-btn">Cancel</button>
+          </div>
+        </div>
+      }
+
+      @if (reviews.length === 0) {
+        <p>No reviews yet</p>
+      } @else {
+        <div class="reviews-list">
+          @for (review of reviews; track review.id) {
+            <div class="review-item">
+              <div class="review-header">
+                <strong>{{ getReviewerName(review) }}</strong> - ⭐ {{ review.rating }}/5
+                <small>{{ review.createdAt | date:'short' }}</small>
+              </div>
+              <p class="review-comment">{{ review.comment }}</p>
+              <div class="review-actions">
+                <button (click)="editReview(review)" class="edit-btn">Edit</button>
+                <button (click)="deleteReview(review.id)" class="delete-btn">Delete</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (loading) {
+    <p>Loading products...</p>
+  } @else if (error) {
+    <p style="color: red;">{{ error }}</p>
+  } @else if (products.length === 0) {
+    <p>No products available</p>
+  } @else if (filteredProducts.length === 0) {
+    <p>No products match your filters. <button (click)="resetFilters()" class="reset-link">Clear filters</button></p>
+  } @else {
+    <div class="products-grid">
+      @for (p of filteredProducts; track p.id) {
+        <div class="product-card">
+          <h3>{{ p.name }}</h3>
+          <p><strong>Description:</strong> {{ p.description }}</p>
+          <p><strong>Price:</strong> ₹ {{ p.price }}</p>
+          <p><strong>Category:</strong> {{ p.category }}</p>
+          <p><strong>Stock:</strong> {{ p.stock }}</p>
+
+          <div class="quantity-selector">
+            <label>Quantity:</label>
+            <input type="number" [(ngModel)]="quantity[p.id]" min="1" [max]="p.stock">
+          </div>
+
+          <div class="actions">
+            <button (click)="addToCart(p.id)" class="add-cart-btn">Add to Cart</button>
+            <button (click)="openProductReviews(p.id)" class="reviews-view-btn">👥 Reviews</button>
+            <button (click)="editProduct(p)" class="edit-btn">Edit</button>
+            <button (click)="deleteProduct(p.id)" class="delete-btn">Delete</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
 
 

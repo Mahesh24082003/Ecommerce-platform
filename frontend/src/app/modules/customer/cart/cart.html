@@ -1,0 +1,49 @@
+<div class="cart-page">
+  <h2>My Cart</h2>
+
+  @if (loading) {
+    <p>Loading cart...</p>
+  } @else if (error) {
+    <p class="error">{{ error }}</p>
+  } @else if (items.length === 0) {
+    <p>Your cart is empty.</p>
+    <a routerLink="/home" class="btn">Continue Shopping</a>
+  } @else {
+    <div class="cart-list">
+      @for (item of items; track item.id) {
+        <div class="cart-item">
+          <div class="meta">
+            <h3>{{ item.Product.name }}</h3>
+            <p>Price: INR {{ item.Product.price }}</p>
+          </div>
+
+          <div class="actions">
+            <input
+              type="number"
+              min="1"
+              [max]="item.Product.stock"
+              [(ngModel)]="item.quantity"
+              (change)="updateQuantity(item)"
+            />
+            <span class="line-total">INR {{ getLineTotal(item) }}</span>
+            <button (click)="removeItem(item.id)" class="remove-btn">Remove</button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="summary">
+      <h3>Total: INR {{ getTotal() }}</h3>
+      <div class="summary-actions">
+        <a routerLink="/home" class="btn">Add More Items</a>
+        <button class="btn checkout-btn" [disabled]="checkingOut" (click)="checkout()">
+          @if (checkingOut) {
+            Processing...
+          } @else {
+            Checkout
+          }
+        </button>
+      </div>
+    </div>
+  }
+</div>
