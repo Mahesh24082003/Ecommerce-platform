@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "frontend": {
+    "ecommerce-ui": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -54,13 +54,15 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular/build:dev-server",
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+          },
           "configurations": {
             "production": {
-              "buildTarget": "frontend:build:production"
+              "buildTarget": "ecommerce-ui:build:production"
             },
             "development": {
-              "buildTarget": "frontend:build:development"
+              "buildTarget": "ecommerce-ui:build:development"
             }
           },
           "defaultConfiguration": "development"
