@@ -1,83 +1,58 @@
 stages:
-  - install
   - build
   - test
 
 variables:
-  NODE_VERSION: "20.x"
+  NODE_VERSION: "20"
 
-# Backend installation
-backend-install:
-  stage: install
+# Build Backend
+build-backend:
+  stage: build
   image: node:${NODE_VERSION}
-  cache:
-    key: backend-node-modules
-    paths:
-      - backend/node_modules/
   script:
+    - echo "Installing backend dependencies..."
     - cd backend
-    - npm ci --prefer-offline --no-audit
+    - npm install
+    - echo "Validating backend syntax..."
+    - node --check server.js
+    - node --check app.js
+    - echo "Backend validation passed ✓"
   artifacts:
     paths:
       - backend/node_modules/
     expire_in: 1 hour
-
-# Frontend installation
-frontend-install:
-  stage: install
-  image: node:${NODE_VERSION}
   cache:
-    key: frontend-node-modules
     paths:
-      - frontend/node_modules/
-  script:
-    - cd frontend
-    - npm ci --prefer-offline --no-audit
-  artifacts:
-    paths:
-      - frontend/node_modules/
-    expire_in: 1 hour
+      - backend/node_modules/
 
-# Backend build/validation
-backend-build:
+# Build Frontend
+build-frontend:
   stage: build
   image: node:${NODE_VERSION}
-  dependencies:
-    - backend-install
   script:
-    - cd backend
-    - echo "Checking backend syntax..."
-    - node --check server.js || exit 1
-    - node --check app.js || exit 1
-    - echo "Backend syntax validation passed"
-  needs:
-    - backend-install
-
-# Frontend build
-frontend-build:
-  stage: build
-  image: node:${NODE_VERSION}
-  dependencies:
-    - frontend-install
-  script:
+    - echo "Installing frontend dependencies..."
     - cd frontend
-    - npm run build -- --configuration production
+    - npm install
+    - echo "Building Angular application..."
+    - npm run build
+    - echo "Frontend build completed ✓"
   artifacts:
     paths:
       - frontend/dist/
     expire_in: 1 week
-  needs:
-    - frontend-install
+  cache:
+    paths:
+      - frontend/node_modules/
 
-# Frontend tests
-frontend-test:
+# Test Frontend
+test-frontend:
   stage: test
   image: node:${NODE_VERSION}
-  dependencies:
-    - frontend-install
   script:
     - cd frontend
-    - npm run test -- --run --browsers=ChromeHeadless || echo "Tests completed with warnings"
-  needs:
-    - frontend-install
+    - npm install
+    - npm run test -- --run || echo "Tests completed"
   allow_failure: true
+  cache:
+    paths:
+      - frontend/node_modules/
