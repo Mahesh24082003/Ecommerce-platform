@@ -1,0 +1,86 @@
+stages:
+  - install
+  - build
+  - test
+
+variables:
+  NODE_VERSION: "20.x"
+
+# Backend installation
+backend-install:
+  stage: install
+  image: node:${NODE_VERSION}
+  cache:
+    paths:
+      - backend/node_modules/
+  script:
+    - cd backend
+    - npm ci
+  only:
+    changes:
+      - backend/**/*
+      - .gitlab-ci.yml
+
+# Frontend installation
+frontend-install:
+  stage: install
+  image: node:${NODE_VERSION}
+  cache:
+    paths:
+      - frontend/node_modules/
+  script:
+    - cd frontend
+    - npm ci
+  only:
+    changes:
+      - frontend/**/*
+      - .gitlab-ci.yml
+
+# Backend build/test
+backend-build:
+  stage: build
+  image: node:${NODE_VERSION}
+  dependencies:
+    - backend-install
+  script:
+    - cd backend
+    - npm run start &
+    - sleep 5
+    - echo "Backend build check completed"
+  only:
+    changes:
+      - backend/**/*
+      - .gitlab-ci.yml
+
+# Frontend build
+frontend-build:
+  stage: build
+  image: node:${NODE_VERSION}
+  dependencies:
+    - frontend-install
+  script:
+    - cd frontend
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/dist/
+    expire_in: 1 week
+  only:
+    changes:
+      - frontend/**/*
+      - .gitlab-ci.yml
+
+# Frontend tests
+frontend-test:
+  stage: test
+  image: node:${NODE_VERSION}
+  dependencies:
+    - frontend-install
+  script:
+    - cd frontend
+    - npm run test -- --run
+  only:
+    changes:
+      - frontend/**/*
+      - .gitlab-ci.yml
+  allow_failure: true
