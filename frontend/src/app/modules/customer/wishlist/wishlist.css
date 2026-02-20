@@ -1,0 +1,37 @@
+.wishlist-page {
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 16px;
+}
+
+.wishlist-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  background: #1f6feb;
+  color: #fff;
+}
+
+.btn.danger {
+  background: #b42318;
+}
+
+.error {
+  color: #c00;
+}

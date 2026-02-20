@@ -1,0 +1,55 @@
+<nav class="navbar">
+  <div class="navbar-content">
+    <div class="navbar-logo">
+      <a routerLink="/" class="logo-text">E-Shop</a>
+    </div>
+
+    <div class="navbar-menu">
+      <ul class="nav-links">
+        @if (isCustomer) {
+          <li><a routerLink="/home">Home</a></li>
+          <li><a routerLink="/wishlist">Wishlist</a></li>
+          <li><a routerLink="/orders">Orders</a></li>
+          <li><a routerLink="/cart">Cart</a></li>
+        }
+        @if (isAdmin) {
+          <li><a routerLink="/admin">Admin Panel</a></li>
+        }
+      </ul>
+    </div>
+
+    <div class="navbar-right">
+      @if (!isLoggedIn) {
+        <div class="auth-buttons">
+          <a routerLink="/login" class="btn-login">Login</a>
+          <a routerLink="/register" class="btn-register">Register</a>
+        </div>
+      } @else {
+        <div class="user-menu-wrapper">
+          <button class="user-menu-btn" (click)="toggleUserMenu()">
+            <span class="user-icon">User</span>
+            <span class="dropdown-icon">v</span>
+          </button>
+
+          @if (showUserMenu) {
+            <div class="user-dropdown" (click)="closeUserMenu()">
+              <ul class="dropdown-menu">
+                @if (isCustomer) {
+                  <li><a routerLink="/profile">My Profile</a></li>
+                  <li><a routerLink="/orders">My Orders</a></li>
+                  <li><a routerLink="/wishlist">My Wishlist</a></li>
+                  <li><a routerLink="/cart">My Cart</a></li>
+                }
+                @if (isAdmin) {
+                  <li><a routerLink="/admin">Admin Settings</a></li>
+                }
+                <li class="divider"></li>
+                <li><button (click)="logout()" class="logout-btn">Logout</button></li>
+              </ul>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</nav>

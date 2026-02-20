@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Angular
+.angular/
+dist/
+tmp/
+out-tsc/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+*.js.map
+*.d.ts.map
+
+# Images (if generated or not required in repo)
+images/
+src/assets/images/generated/
+
+# Cache
+.cache/
+.angular/cache/
