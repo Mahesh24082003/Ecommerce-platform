@@ -1,0 +1,30 @@
+<div class="profile-page">
+  <h2>My Profile</h2>
+
+  @if (loading) {
+    <p>Loading profile...</p>
+  } @else if (error) {
+    <p class="error">{{ error }}</p>
+  } @else if (profile) {
+    <div class="profile-card">
+      <p><strong>Email:</strong> {{ profile.email }}</p>
+
+      <label for="name">Name</label>
+      <input id="name" [(ngModel)]="formData.name" />
+
+      <label for="phone">Phone</label>
+      <input id="phone" [(ngModel)]="formData.phone" />
+
+      <label for="address">Address</label>
+      <textarea id="address" [(ngModel)]="formData.address"></textarea>
+
+      <button class="btn" [disabled]="saving" (click)="saveProfile()">
+        @if (saving) {
+          Saving...
+        } @else {
+          Save Changes
+        }
+      </button>
+    </div>
+  }
+</div>

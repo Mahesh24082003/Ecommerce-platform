@@ -1,0 +1,46 @@
+<div class="checkout-page">
+  <h2>Checkout</h2>
+
+  @if (loading) {
+    <p>Loading cart...</p>
+  } @else if (error) {
+    <p class="error">{{ error }}</p>
+  } @else if (items.length === 0) {
+    <p>Your cart is empty.</p>
+    <a routerLink="/home" class="btn">Continue Shopping</a>
+  } @else {
+    <div class="checkout-grid">
+      <div class="checkout-form">
+        <label for="shippingAddress">Shipping Address</label>
+        <textarea
+          id="shippingAddress"
+          [(ngModel)]="shippingAddress"
+          placeholder="Enter full shipping address"
+        ></textarea>
+
+        <label for="paymentMethod">Payment Method</label>
+        <select id="paymentMethod" [(ngModel)]="paymentMethod">
+          <option value="COD">Cash on Delivery</option>
+          <option value="Stripe">Stripe (Sandbox)</option>
+          <option value="PayPal">PayPal (Sandbox)</option>
+        </select>
+
+        <button class="btn" [disabled]="placingOrder" (click)="placeOrder()">
+          @if (placingOrder) {
+            Processing...
+          } @else {
+            Place Order
+          }
+        </button>
+      </div>
+
+      <div class="summary">
+        <h3>Order Summary</h3>
+        @for (item of items; track item.id) {
+          <p>{{ item.Product.name }} x {{ item.quantity }}</p>
+        }
+        <h4>Total: INR {{ getTotal() }}</h4>
+      </div>
+    </div>
+  }
+</div>
